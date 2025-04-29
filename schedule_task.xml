@@ -44,8 +44,8 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>powershell.exe</Command>
-      <Arguments>-ExecutionPolicy Bypass -File "C:\Scripts\outlook-to-gcal.ps1"</Arguments>
+      <Command>wscript.exe</Command>
+      <Arguments>"C:\Scripts\launch-outlook-sync.vbs"</Arguments>
     </Exec>
   </Actions>
 </Task>
