@@ -226,22 +226,32 @@ foreach ($event in $allEvents) {
     $eventKey = "SyncedFromOutlook|$($event.Subject)|$($event.Start)"
 
     if (-not $googleKeys.ContainsKey($eventKey)) {
+        $startTime = Get-Date $event.Start -Format "yyyy-MM-ddTHH:mm:ss"
+        $endTime = Get-Date $event.End -Format "yyyy-MM-ddTHH:mm:ss"
+
         $eventBody = @{
             summary = $event.Subject
             description = $eventKey
-            start = @{dateTime = $event.Start; timeZone = "UTC"}
-            end = @{dateTime = $event.End; timeZone = "UTC"}
-        } | ConvertTo-Json -Depth 3
+            start = @{
+                dateTime = $startTime
+                timeZone = $GoogleCalendarTimeZone
+            }
+            end = @{
+                dateTime = $endTime
+                timeZone = $GoogleCalendarTimeZone
+            }
+        } | ConvertTo-Json -Depth 3 -Compress
 
         Invoke-RestMethod -Method POST -Uri "https://www.googleapis.com/calendar/v3/calendars/$GmailCalendarID/events" `
             -Headers $headers -Body $eventBody -ContentType "application/json"
 
-        Write-Host "➕ Added: $($event.Subject) at $($event.Start)" -ForegroundColor Yellow
+        Write-Host "➕ Added: $($event.Subject) at $($startTime)" -ForegroundColor Yellow
         $addedCount++
     } else {
         $skippedCount++
     }
 }
+
 
 # === DELETE ORPHANED GMAIL EVENTS ===
 $outlookKeys = @{}
